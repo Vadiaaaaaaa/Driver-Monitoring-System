@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, Float, String, DateTime
-from backend.database import Base
+from database import Base
 from datetime import datetime
 
 class Metric(Base):
