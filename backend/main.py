@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
-from backend.database import SessionLocal, engine
+from database import SessionLocal, engine
 from backend import models, schemas
 from datetime import datetime
 
