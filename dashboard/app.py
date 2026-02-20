@@ -1,51 +1,68 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-import requests
 
-st.set_page_config(page_title="Driver Monitoring Dashboard", layout="wide")
+st.set_page_config(
+    page_title="AI Driver Monitoring Dashboard",
+    layout="wide"
+)
 
-st.title("AI Driver Monitoring – Cloud Analytics")
+st.title("🚗 AI Driver Monitoring – Fleet Analytics")
 
-API_URL = "http://127.0.0.1:8000/metrics"
+DATA_PATH = "data/session_logs.csv"
 
-# -----------------------------
-# Fetch Data From Backend
-# -----------------------------
 try:
-    response = requests.get(API_URL)
-    data = response.json()
-    df = pd.DataFrame(data)
+    df = pd.read_csv(DATA_PATH)
 except:
-    st.error("Backend not reachable. Is FastAPI running?")
+    st.error("No session data found.")
     st.stop()
 
 if df.empty:
-    st.warning("No metrics available in database.")
+    st.warning("Session log file is empty.")
     st.stop()
 
 # Convert timestamp
-df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
+df["timestamp"] = pd.to_datetime(df["timestamp"])
 
 # -----------------------------
-# Summary Metrics Row
+# Sidebar Filters
 # -----------------------------
-colA, colB, colC, colD = st.columns(4)
+st.sidebar.header("Filters")
 
-colA.metric("Average Risk", f"{df['risk_score'].mean():.2f}")
-colB.metric("Max Risk", f"{df['risk_score'].max():.2f}")
-colC.metric("Avg Blink Rate", f"{df['blink_rate'].mean():.1f}/min")
-colD.metric("Total Records", len(df))
+device_ids = df["device_id"].unique()
+selected_device = st.sidebar.selectbox("Select Device", device_ids)
+
+df = df[df["device_id"] == selected_device]
+
+session_ids = df["session_id"].unique()
+selected_session = st.sidebar.selectbox("Select Session", session_ids)
+
+df = df[df["session_id"] == selected_session]
+
+# -----------------------------
+# KPI Row
+# -----------------------------
+avg_risk = df["risk_score"].mean()
+max_risk = df["risk_score"].max()
+avg_blink = df["blink_rate"].mean()
+total_records = len(df)
+
+col1, col2, col3, col4 = st.columns(4)
+
+col1.metric("Average Risk", f"{avg_risk:.2f}")
+col2.metric("Max Risk", f"{max_risk:.2f}")
+col3.metric("Avg Blink Rate", f"{avg_blink:.1f} /min")
+col4.metric("Total Records", total_records)
 
 st.divider()
 
 # -----------------------------
-# 2 x 2 Layout
+# 2x2 Analytics Grid
 # -----------------------------
-col1, col2 = st.columns(2)
+colA, colB = st.columns(2)
 
-# ---- Risk Over Time ----
-with col1:
+# Risk Over Time
+with colA:
     st.subheader("Risk Score Over Time")
     fig1, ax1 = plt.subplots()
     ax1.plot(df["timestamp"], df["risk_score"])
@@ -54,8 +71,8 @@ with col1:
     ax1.set_ylabel("Risk Score")
     st.pyplot(fig1)
 
-# ---- Blink Rate ----
-with col2:
+# Blink Rate
+with colB:
     st.subheader("Blink Rate Over Time")
     fig2, ax2 = plt.subplots()
     ax2.plot(df["timestamp"], df["blink_rate"])
@@ -63,10 +80,10 @@ with col2:
     ax2.set_ylabel("Blink Rate (/min)")
     st.pyplot(fig2)
 
-col3, col4 = st.columns(2)
+colC, colD = st.columns(2)
 
-# ---- Yaw Distribution ----
-with col3:
+# Head Yaw Distribution
+with colC:
     st.subheader("Head Yaw Distribution")
     fig3, ax3 = plt.subplots()
     ax3.hist(df["yaw"], bins=30)
@@ -74,8 +91,8 @@ with col3:
     ax3.set_ylabel("Frequency")
     st.pyplot(fig3)
 
-# ---- State Distribution ----
-with col4:
+# Driver State Distribution
+with colD:
     st.subheader("Driver State Distribution")
     state_counts = df["state"].value_counts()
     fig4, ax4 = plt.subplots()
