@@ -11,18 +11,47 @@ st.title("🚗 AI Driver Monitoring – Fleet Analytics")
 
 DATA_PATH = "data/session_logs.csv"
 
+# -----------------------------
+# Load Data Safely
+# -----------------------------
 try:
     df = pd.read_csv(DATA_PATH)
-except:
-    st.error("No session data found.")
+except Exception as e:
+    st.error("No session data found or file cannot be read.")
     st.stop()
 
 if df.empty:
     st.warning("Session log file is empty.")
     st.stop()
 
-# Convert timestamp
-df["timestamp"] = pd.to_datetime(df["timestamp"])
+# -----------------------------
+# Safe Timestamp Conversion
+# -----------------------------
+if "timestamp" not in df.columns:
+    st.error("Timestamp column missing in CSV.")
+    st.stop()
+
+df["timestamp"] = (
+    df["timestamp"]
+    .astype(str)
+    .str.strip()
+)
+
+df["timestamp"] = pd.to_datetime(
+    df["timestamp"],
+    errors="coerce",
+    format="ISO8601"
+)
+
+# Drop invalid timestamps
+df = df.dropna(subset=["timestamp"])
+
+# Sort for clean plotting
+df = df.sort_values("timestamp")
+
+if df.empty:
+    st.error("No valid timestamp records found after parsing.")
+    st.stop()
 
 # -----------------------------
 # Sidebar Filters
@@ -38,6 +67,10 @@ session_ids = df["session_id"].unique()
 selected_session = st.sidebar.selectbox("Select Session", session_ids)
 
 df = df[df["session_id"] == selected_session]
+
+if df.empty:
+    st.warning("No data available for selected device/session.")
+    st.stop()
 
 # -----------------------------
 # KPI Row
