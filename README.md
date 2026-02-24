@@ -8,8 +8,6 @@ This project implements a real-time AI-based Driver Monitoring System (DMS) that
 
 The system processes live webcam input, extracts facial landmarks using MediaPipe Face Mesh, computes eye metrics and head pose, and classifies driver state using a multi-factor risk fusion model. Logged session data is visualized through a cloud-deployed analytics dashboard.
 
----
-
 ## System Architecture
 
 ### Edge Layer (Real-Time Engine)
@@ -152,4 +150,5 @@ Driver-Monitoring-System/
 * Cloud database integration (PostgreSQL / Supabase)
 * Real-time WebSocket streaming dashboard
 * Edge device deployment (Jetson / Raspberry Pi)
+
 
