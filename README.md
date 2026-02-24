@@ -28,8 +28,6 @@ The system processes live webcam input, extracts facial landmarks using MediaPip
 * Driver state breakdown
 * Cloud deployment via Streamlit
 
----
-
 ## Key Features
 
 ### Real-Time Face Landmark Detection
@@ -79,8 +77,6 @@ Produces behavioral states:
 * Head yaw distribution
 * Driver state distribution
 
----
-
 ## Technologies Used
 
 * Python
@@ -92,8 +88,6 @@ Produces behavioral states:
 * Streamlit
 * Matplotlib
 * Git and GitHub
-
----
 
 ## Project Structure
 
@@ -118,8 +112,6 @@ Driver-Monitoring-System/
 └── README.md
 ```
 
----
-
 ## How It Works
 
 1. Webcam captures real-time video.
@@ -131,7 +123,6 @@ Driver-Monitoring-System/
 7. Metrics are logged per session.
 8. Dashboard visualizes behavioral trends.
 
----
 
 ## Engineering Highlights
 
@@ -141,7 +132,6 @@ Driver-Monitoring-System/
 * Built a multi-signal risk fusion model instead of single-threshold logic.
 * Structured system for extensibility and future ML integration.
 
----
 
 ## Future Improvements
 
@@ -150,5 +140,6 @@ Driver-Monitoring-System/
 * Cloud database integration (PostgreSQL / Supabase)
 * Real-time WebSocket streaming dashboard
 * Edge device deployment (Jetson / Raspberry Pi)
+
 
 
